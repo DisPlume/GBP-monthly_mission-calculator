@@ -167,7 +167,11 @@ document.addEventListener('alpine:init', () => {
                 return parseInt(this.current_tier_xp || 0);
             },
             currentXp() {
-                return (this.currentCompletedTier() * 10000) + this.currentTierXp();
+                //return (this.currentCompletedTier() * 10000) + this.currentTierXp();
+				let result = parseInt(this.current_tier || 0);
+                if (result < 1) return 1;
+                //if (result > 200) return 200;
+                return result;
             },
             currentPrestigeXp() {
                 return Math.max(this.currentXp() - 800000, 0);
@@ -182,8 +186,8 @@ document.addEventListener('alpine:init', () => {
                 return Math.min(this.currentXp() / 800000, 1) * 100;
             },
             currentPercentBar() {
-                let current = Math.min(this.currentXp(), 800000);
-                return Math.min(current / 2000000, 1) * 100;
+                let current = Math.min(this.currentXp(), 2500); //800000->2500
+                return Math.min(current / 2500, 1) * 100;
             },
             currentPrestigePercent() {
                 return Math.min((this.currentXp() - 800000) / 1200000, 1) * 100;
