@@ -14,14 +14,14 @@ document.addEventListener('alpine:init', () => {
             expected_match_xp: this.$persist(500),
             days_to_be_missed: this.$persist(0),
             // default values
-            season: { season: 1, seasonStart: new Date('2022-10-04'), seasonEnd: new Date('2022-12-06') },
+            season: { season: 1, seasonStart: new Date('2022-11-01'), seasonEnd: new Date('2022-11-30') },
 
             //ui
             tab: this.$persist('all'),
 
             init() {
                 // get current season and display it
-                this.season = this.getSeason(new Date('2022-10-04'));
+                this.season = this.getSeason(new Date('2022-11-01'));
                 document.getElementById('season_title').innerText = 'Season ' + this.season.season;
                 if (window.location.hash) {
                     const params = new URLSearchParams(window.location.hash.substring(1));
@@ -102,19 +102,16 @@ document.addEventListener('alpine:init', () => {
              * @param {Date} today default is today, overwrite for testing
              * @returns {Object} {season: number, seasonStart: Date, seasonEnd: Date}
              */
-            getSeason(startDate = new Date('2022-10-04'), today = new Date()) {
-                const oneWeek = 7 * 24 * 60 * 60 * 1000;
-                // Calculate season duration in milliseconds
-                const seasonDuration = 9 * oneWeek;
-                // Calculate the difference between start date and today
-                const diff = today - startDate;
+            getSeason(startDate = new Date('2022-11-01'), today = new Date()) {		
+				// Calculate month's diff
+				const monthDiff = today.getMonth() - startDate.getMonth() + (12 * (today.getFullYear() - startDate.getFullYear()))
                 // Get the season number
-                const season = Math.floor(diff / seasonDuration) + 1;
+                const season = monthDiff + 1;
 
                 // Get the start date of the season
-                const seasonStart = new Date(startDate.getTime() + seasonDuration * (season - 1));
+                const seasonStart = new Date(today.getFullYear(), today.getMonth(), 1);
                 // Get the end date of the season
-                const seasonEnd = new Date(seasonStart.getTime() + seasonDuration - 1);
+                const seasonEnd = new Date(today.getFullYear(), today.getMonth()+1, 0);
 
                 // Return season number, start and end dates
                 return { season, seasonStart, seasonEnd };
