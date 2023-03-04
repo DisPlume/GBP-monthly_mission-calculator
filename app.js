@@ -14,14 +14,14 @@ document.addEventListener('alpine:init', () => {
             expected_match_xp: this.$persist(500),
             days_to_be_missed: this.$persist(0),
             // default values
-            season: { season: 1, seasonStart: new Date('2022-11-01'), seasonEnd: new Date('2022-11-30') },
+            season: { season: 1, seasonStart: new Date('Nov 1 2022 00:00:00 GMT+0900'), seasonEnd: new Date('Nov 30 2022 23:59:00 GMT+0900') },
 
             //ui
             tab: this.$persist('all'),
 
             init() {
                 // get current season and display it
-                this.season = this.getSeason(new Date('2022-11-01'));
+                this.season = this.getSeason(new Date('Nov 1 2022 00:00:00 GMT+0900'));
                 document.getElementById('season_title').innerText = 'Season ' + this.season.season;
                 if (window.location.hash) {
                     const params = new URLSearchParams(window.location.hash.substring(1));
@@ -65,7 +65,7 @@ document.addEventListener('alpine:init', () => {
             },
             reset() {
                 //past progress
-                this.current_tier = 1;
+                this.current_tier = 0;
                 this.current_tier_xp = 0;
                 this.days_missed = 0;
 
@@ -96,17 +96,31 @@ document.addEventListener('alpine:init', () => {
             },
 
             //season
+			
+			
+			JPDate() {
+				const now = new Date();
+				const localOffset = now.getTimezoneOffset();
+				const japanOffset = -540;
+				const japanTimeA = now.getTime() + ((localOffset-japanOffset) * 60 * 1000) ;
+				return new Date(japanTimeA);
+
+
+            },
+		
+			
+			
             /**
              *
-             * @param {Date} startDate default is 2022-10-04
+             * @param {Date} startDate default is 2022-11-01
              * @param {Date} today default is today, overwrite for testing
              * @returns {Object} {season: number, seasonStart: Date, seasonEnd: Date}
              */
-            getSeason(startDate = new Date('2022-11-01'), today = new Date()) {		
+            getSeason(startDate = new Date('Nov 1 2022 00:00:00 GMT+0900'), today = this.JPDate()) {		
 				// Calculate month's diff
 				const monthDiff = today.getMonth() - startDate.getMonth() + (12 * (today.getFullYear() - startDate.getFullYear()))
                 // Get the season number
-                const season = monthDiff + 1;
+                const season = monthDiff + 0;
 
                 // Get the start date of the season
                 const seasonStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -123,15 +137,15 @@ document.addEventListener('alpine:init', () => {
                 return this.season.seasonEnd;
             },
             daysLeft() {
-                return (this.seasonEnd() - new Date()) / 86400000;
+                return (this.seasonEnd() - this.JPDate()) / 86400000;
             },
             daysMissed() {
                 return parseInt(this.days_missed || 0);
             },
 
-            //current progress
+            //current progress new Date().toLocaleString("en-US", {timeZone: "Asia/Tokyo"})
             currentDay() {
-                return (new Date() - this.seasonStart()) / 86400000;
+                return (this.JPDate() - this.seasonStart()) / 86400000;
             },
             daysPlayed() {
                 return (this.currentDay() - this.daysMissed()).$max(0);
@@ -143,18 +157,15 @@ document.addEventListener('alpine:init', () => {
                 return result;
             },
             currentCompletedTier() {
-                if (this.currentTier() > 200) return 200;
-                else if (this.currentTier() === 200 && this.currentTierXp() >= 250000) return 200;
-                else if (this.currentTier() > 175) return 175;
-                else if (this.currentTier() > 155) return 155;
-                else if (this.currentTier() > 135) return 135;
-                else if (this.currentTier() > 120) return 120;
-                else if (this.currentTier() > 105) return 105;
-                else if (this.currentTier() > 95) return 95;
-                else if (this.currentTier() > 85) return 85;
-                else if (this.currentTier() > 80) return 80;
-
-                return Math.max(this.currentTier() - 1, 0);
+                if (this.current_tier > 2500) return 67;
+                else if (this.current_tier > 2000 && this.current_tier <= 2500) return (Math.floor((this.current_tier - 2000) / 100) + 62);
+				else if (this.current_tier > 800 && this.current_tier <= 2000) return (Math.floor((this.current_tier - 800) / 50) + 38);
+				else if (this.current_tier > 100 && this.current_tier <= 800) return (Math.floor((this.current_tier - 100) / 25) + 11);
+				else if (this.current_tier > 5 && this.current_tier <= 100) return (Math.floor((this.current_tier - 5) / 10) + 1);
+				else if (this.current_tier == 5) return (1);
+				else if (this.current_tier < 5) return (0);
+				
+                return Math.max(this.current_tier - 1, 0);
             },
             currentCompletedPrestigeTier() {
                 return Math.max(this.currentCompletedTier() - 80, 0);
@@ -166,7 +177,7 @@ document.addEventListener('alpine:init', () => {
             currentXp() {
                 //return (this.currentCompletedTier() * 10000) + this.currentTierXp();
 				let result = parseInt(this.current_tier || 0);
-                if (result < 1) return 1;
+                if (result < 0) return 0;
                 //if (result > 200) return 200;
                 return result;
             },
@@ -180,7 +191,7 @@ document.addEventListener('alpine:init', () => {
                 return Math.max(2000000 - this.currentXp(), 0);
             },
             currentPercent() {
-                return Math.min(this.currentXp() / 800000, 1) * 100;
+                return Math.min(this.currentXp() / 2500, 1) * 100;
             },
             currentPercentBar() {
                 let current = Math.min(this.currentXp(), 2500); //800000->2500
@@ -195,7 +206,7 @@ document.addEventListener('alpine:init', () => {
 
             //remaining
             remainingDays() {
-                return Math.max((this.seasonEnd() - new Date()) / 86400000, 0);
+                return Math.max((this.seasonEnd() - this.JPDate()) / 86400000, 0);
             },
             daysToBeMissed() {
                 return parseInt(this.days_to_be_missed || 0);
@@ -554,3 +565,51 @@ document.addEventListener('alpine:init', () => {
         }
     })
 })
+
+function updateTime() {
+  const japanTimezoneOffset = 540;
+  const now = new Date();
+  const japanTime = new Date(now.getTime());
+  const japanYear = japanTime.getFullYear();
+  const japanMonth = (japanTime.getMonth() + 1).toString().padStart(2, '0');
+  const japanDay = japanTime.getDate().toString().padStart(2, '0');
+  const japanHours = japanTime.getHours().toString().padStart(2, '0');
+  const japanMinutes = japanTime.getMinutes().toString().padStart(2, '0');
+  const japanSeconds = japanTime.getSeconds().toString().padStart(2, '0');
+  
+  const nowgettimedate = `nowgettime(): ${japanYear}/${japanMonth}/${japanDay} ${japanHours}:${japanMinutes}:${japanSeconds}`;
+  
+  document.getElementById('nowgettime').textContent = nowgettimedate;
+  
+  const localYear = now.getFullYear();
+  const localMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+  const localDay = now.getDate().toString().padStart(2, '0');
+  const localHours = now.getHours().toString().padStart(2, '0');
+  const localMinutes = now.getMinutes().toString().padStart(2, '0');
+  const localSeconds = now.getSeconds().toString().padStart(2, '0');
+  
+  const localTimeString = `Local Time: ${localYear}/${localMonth}/${localDay} ${localHours}:${localMinutes}:${localSeconds}`;
+  
+  document.getElementById('local-time').textContent = localTimeString;
+  
+
+  const localOffset = now.getTimezoneOffset();
+  const japanOffset = -540;
+  const japanTimeA = now.getTime() + ((localOffset-japanOffset) * 60 * 1000) ;
+  const japanDate = new Date(japanTimeA);
+  const localYearA = japanDate.getFullYear();
+  const localMonthA = (japanDate.getMonth() + 1).toString().padStart(2, '0');
+  const localDayA = japanDate.getDate().toString().padStart(2, '0');
+  const localHoursA = japanDate.getHours().toString().padStart(2, '0');
+  const localMinutesA = japanDate.getMinutes().toString().padStart(2, '0');
+  const localSecondsA = japanDate.getSeconds().toString().padStart(2, '0');
+  
+  const localTimeStringA = `Japan Time: ${localYearA}/${localMonthA}/${localDayA} ${localHoursA}:${localMinutesA}:${localSecondsA}`;
+
+  
+  document.getElementById('local-timeA').textContent = localTimeStringA;
+  document.getElementById('japan-time').textContent = localOffset;
+  document.getElementById('testss').textContent = ((japanOffset-localOffset) * 60 * 1000);
+}
+
+setInterval(updateTime, 1000);

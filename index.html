@@ -33,6 +33,11 @@
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 <body>
+<div id="nowgettime"></div>
+<div id="japan-time"></div>
+<div id="local-time"></div>
+<div id="local-timeA"></div>
+<div id="testss"></div>
 <div x-data="app">
     <h1>
         <img src="logo.webp" style="max-width:260px; position: relative; top:3px;" alt="Overwatch 2"/>
@@ -117,6 +122,7 @@
             <li x-show="currentCompletedTier() < 200">
                 <span title="Your current progress">
                     Progress:
+					<span class="highlight" x-text="currentDay()+' test'">0 test</span>,
                     <span class="highlight" x-text="currentDay().$floor().$localize()+' days'">0 days</span>,
                     <span class="highlight" x-text="currentCompletedTier()+' tiers'">0 tiers</span>,
                     <span class="highlight" x-text="currentXp().$localize()+' XP'">0 XP</span>,
