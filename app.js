@@ -161,7 +161,7 @@ document.addEventListener('alpine:init', () => {
                 else if (this.current_tier > 2000 && this.current_tier <= 2500) return (Math.floor((this.current_tier - 2000) / 100) + 62);
 				else if (this.current_tier > 800 && this.current_tier <= 2000) return (Math.floor((this.current_tier - 800) / 50) + 38);
 				else if (this.current_tier > 100 && this.current_tier <= 800) return (Math.floor((this.current_tier - 100) / 25) + 11);
-				else if (this.current_tier > 5 && this.current_tier <= 100) return (Math.floor((this.current_tier - 5) / 10) + 1);
+				else if (this.current_tier > 5 && this.current_tier <= 100) return (Math.floor((this.current_tier) / 10) + 1);
 				else if (this.current_tier == 5) return (1);
 				else if (this.current_tier < 5) return (0);
 				
@@ -325,16 +325,29 @@ document.addEventListener('alpine:init', () => {
             },
             projectedTiers() {
                 let expecting = this.currentXp() + (this.projectedDailyXp() * this.remainingDays());
-                let result = expecting / 10000;
-                if (result < 0) return 0;
-                if (result > 200) return 200;
-                return result;
+				if (expecting > 2500) return 67;
+                else if (expecting > 2000 && expecting <= 2500) return (Math.floor((expecting - 2000) / 100) + 62);
+				else if (expecting > 800 && expecting <= 2000) return (Math.floor((expecting - 800) / 50) + 38);
+				else if (expecting > 100 && expecting <= 800) return (Math.floor((expecting - 100) / 25) + 11);
+				else if (expecting > 5 && expecting <= 100) return (Math.floor((expecting) / 10) + 1);
+				else if (expecting == 5) return (1);
+				else if (expecting < 5) return (0);
+				
+				//return this.remainingDays();
+			
+                //let result = expecting / 10000;
+                //if (result < 0) return 0;
+                //if (result > 200) return 200;
+                //return result;
             },
+			projectedTiers_xp() {
+				return this.currentXp() + (this.projectedDailyXp() * this.remainingDays());
+			},
             projectedPercent() {
-                return (Math.min(this.projectedTiers(), 80) / 80) * 100;
+                return (Math.min(this.projectedTiers(), 67) / 67) * 100;
             },
             projectedPercentBar() {
-                return (Math.min(this.projectedTiers(), 80) / 200) * 100;
+                return (Math.min(this.projectedTiers(), 67) / 67) * 100;
             },
             projectedPrestigePercent() {
                 return (this.projectedPrestigeTiers() / 120) * 100;
@@ -376,13 +389,16 @@ document.addEventListener('alpine:init', () => {
 
             //projected fail
             projectedWillFail() {
-                return this.projectedTiers() < 80;
+                return this.projectedTiers() < 67;
             },
             projectedSpareTiers() {
-                return 80 - this.projectedTiers();
+                return 67 - this.projectedTiers();
+            },
+            projectedSparexp() {
+                return Math.min(2500 - this.projectedTiers_xp(),0);
             },
             projectedSpareTiersCoins() {
-                return this.projectedSpareTiers().$ceil() * 200;
+                return this.projectedSpareTiers().$ceil() * 100;
             },
             projectedSpareTiersDollars() {
                 return this.projectedSpareTiersCoins() / 100;
