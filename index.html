@@ -50,34 +50,64 @@
         <form>
             <h2>Past Progress</h2>
             <p title="The current tier you are working on">
-                <label for="current_tier">Current tier</label>
-                <input id="current_tier" type="text" x-model="current_tier" inputmode="numeric"/> (max 200)
+                <label for="current_tier">Current xp</label>
+                <input id="current_tier" type="text" x-model="current_tier" inputmode="numeric"/> (max 2500)
             </p>
+			<!--
             <p title="How much XP you have already earned towards the current tier">
                 <label for="current_tier_xp">XP in current tier</label>
                 <input id="current_tier_xp" type="text" x-model="current_tier_xp" inputmode="numeric"/>
             </p>
+			-->
             <p title="How many days you've missed so far, either from a late start in the season, vacation time, etc...">
                 <label for="days_missed">Days missed</label>
                 <input id="days_missed" type="text" x-model="days_missed" inputmode="numeric"/>
             </p>
 
             <h2>Future Plans</h2>
+			<!--
             <p title="How many weekly challenges you will complete each week">
                 <label for="expected_weeklies">Weeklies per week</label>
                 <input id="expected_weeklies" type="text" x-model="expected_weeklies" inputmode="numeric"/> (max 11)
-            </p>
+            </p>-->
             <p title="How many days you will play each week">
                 <label for="expected_play_days">Days played per week</label>
                 <input id="expected_play_days" type="text" x-model="expected_play_days" inputmode="numeric"/>
             </p>
+			<!--
             <p title="Each day you play, how many daily challenges will you complete">
                 <label for="expected_dailies">Dailies per day played</label>
                 <input id="expected_dailies" type="text" x-model="expected_dailies" inputmode="numeric"/>
+            </p>-->
+            <p title="How many boosts per Live?">
+                <!--<label for="expected_match_boosts">Matches per day played</label>-->
+				<div class="options">
+				  
+				    <label for="toggle">Garupa Pass </label>
+					<label class="switch">
+					  <input type="checkbox" id="toggle" onclick="toggleboostValues(); uncheckOtherOptions(this)" onchange="toggleSwitch()">
+					  <span class="slider round"></span>
+					</label>
+				</div>
+				<div class="options">
+				  <input type="checkbox" id="option1" name="option" onclick="changeBoostValue(1); uncheckOtherOptions(this)"checked>
+				  <label for="option1" id="option1-label">5 LP</label>
+
+				  <input type="checkbox" id="option2" name="option" onclick="changeBoostValue(2); uncheckOtherOptions(this)">
+				  <label for="option2" id="option2-label">6 LP</label>
+
+				  <input type="checkbox" id="option3" name="option" onclick="changeBoostValue(3); uncheckOtherOptions(this)">
+				  <label for="option3" id="option3-label">7 LP</label>
+				</div>
+
             </p>
             <p title="Each day you play, how many matches will you complete">
                 <label for="expected_daily_matches">Matches per day played</label>
                 <input id="expected_daily_matches" type="text" x-model="expected_daily_matches" inputmode="numeric"/>
+            </p>
+            <p title="Each day you play, how many boosts will you spend">
+                <label for="expected_daily_boosts">Boosts per day spent</label>
+                <input id="expected_daily_boosts" type="text" x-model="expected_daily_boosts" inputmode="numeric"/>
             </p>
             <p title="How much XP do you earn on average per match">
                 <label for="expected_match_xp">Average match XP</label>
@@ -316,13 +346,13 @@
         <ul>
             <li title="Your daily pace going forward">
                 Daily pace:
-                <span class="highlight" x-text="expectedDailyTiers().$round(1)+' tiers'">0 tiers</span>,
+                <!--<span class="highlight" x-text="expectedDailyTiers().$round(1)+' tiers'">0 tiers</span>,-->
                 <span class="highlight" x-text="expectedDailyXp().$round().$localize()+' XP'">0 XP</span>,
                 <span class="highlight" x-text="expectedDailyPercent().$round(1)+'%'">0%</span>
             </li>
             <li title="Your weekly pace going forward">
                 Weekly pace:
-                <span class="highlight" x-text="expectedWeeklyTiers().$round(1)+' tiers'">0 tiers</span>,
+                <!--<span class="highlight" x-text="expectedWeeklyTiers().$round(1)+' tiers'">0 tiers</span>,-->
                 <span class="highlight" x-text="expectedWeeklyXp().$round().$localize()+' XP'">0 XP</span>,
                 <span class="highlight" x-text="expectedWeeklyPercent().$round(1)+'%'">0%</span>
             </li>

@@ -2,17 +2,18 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('app', function () {
         return {
             //past progress
-            current_tier: this.$persist(1),
+            current_tier: this.$persist(0),
             current_tier_xp: this.$persist(0),
             days_missed: this.$persist(0),
 
             //future plans
-            expected_weeklies: this.$persist(8),
+            expected_weeklies: this.$persist(0),
             expected_play_days: this.$persist(5),
-            expected_dailies: this.$persist(3),
-            expected_daily_matches: this.$persist(5),
-            expected_match_xp: this.$persist(500),
+            expected_dailies: this.$persist(0),
+            expected_daily_matches: this.$persist(3),
+            expected_match_xp: this.$persist(7),
             days_to_be_missed: this.$persist(0),
+			expected_daily_boosts: this.$persist(10),
             // default values
             season: { season: 1, seasonStart: new Date('Nov 1 2022 00:00:00 GMT+0900'), seasonEnd: new Date('Nov 30 2022 23:59:00 GMT+0900') },
 
@@ -38,6 +39,7 @@ document.addEventListener('alpine:init', () => {
                     if (params.has('m')) this.expected_daily_matches = params.get('m');
                     if (params.has('v')) this.expected_match_xp = params.get('v');
                     if (params.has('e')) this.days_to_be_missed = params.get('e');
+					if (params.has('a')) this.expected_daily_boosts = params.get('a');
                 }
             },
 
@@ -70,12 +72,13 @@ document.addEventListener('alpine:init', () => {
                 this.days_missed = 0;
 
                 //future plans
-                this.expected_weeklies = 8;
+                this.expected_weeklies = 0;
                 this.expected_play_days = 5;
-                this.expected_dailies = 3;
-                this.expected_daily_matches = 5;
-                this.expected_match_xp = 500;
+                this.expected_dailies = 0;
+                this.expected_daily_matches = 3;
+                this.expected_match_xp = 7;
                 this.days_to_be_missed = 0;
+				this.expected_daily_boosts = 10;
             },
 
             //tabs
@@ -417,6 +420,9 @@ document.addEventListener('alpine:init', () => {
             expectedDailies() {
                 return parseInt(this.expected_dailies || 0);
             },
+            expectedBoosts() {
+                return parseInt(this.expected_daily_boosts || 0);
+            },
             expectedDailyDailiesXp() {
                 let dailyXp = 0;
 
@@ -438,9 +444,11 @@ document.addEventListener('alpine:init', () => {
             },
             expectedDailyMatchXp() {
                 return ((this.expectedDailyMatches() * this.expectedMatchXp()) * this.expectedPlayDays()) / 7;
+				//return this.expected_daily_boosts()/boost;
             },
             expectedDailyXp() {
-                return this.expectedDailyMatchXp() + this.expectedDailyDailiesXp() + this.expectedDailyWeekliesXp();
+				return this.expectedDailyMatchXp();
+                //return this.expectedDailyMatchXp() + this.expectedDailyDailiesXp() + this.expectedDailyWeekliesXp();
             },
             expectedXp() {
                 return this.expectedDailyXp() * this.remainingDays();
@@ -629,3 +637,59 @@ function updateTime() {
 }
 
 setInterval(updateTime, 1000);
+
+var boost = 0;
+var boostValues = [5, 6, 7];
+var isToggled = false;
+
+function changeBoostValue(option) {
+  boost = boostValues[option-1];
+  updateBoost();
+}
+
+function updateBoost() {
+  // Do whatever you want to do with the updated Boost value
+  console.log("Boost value is now " + boost);
+}
+
+function toggleboostValues() {
+  isToggled = !isToggled; // 切換狀態變量
+  if (isToggled) {
+    boostValues = [5, 10, 15];
+  } else {
+    boostValues = [5, 6, 7];
+  }
+  boost = boostValues[0];
+  updateBoost();
+}
+
+// Initialize with the first value of the boostValues array
+boost = boostValues[0];
+updateBoost();
+
+
+function uncheckOtherOptions(option) {
+  var options = document.getElementsByName("option");
+  for (var i = 0; i < options.length; i++) {
+    if (options[i] != option) {
+      options[i].checked = false;
+    }
+  }
+}
+
+function toggleSwitch() {
+  var switchButton = document.getElementById("toggle");
+  var option1Label = document.getElementById("option1-label");
+  var option2Label = document.getElementById("option2-label");
+  var option3Label = document.getElementById("option3-label");
+
+  if (switchButton.checked) {
+    option1Label.innerText = "5 LP";
+    option2Label.innerText = "10 LP";
+    option3Label.innerText = "15 LP";
+  } else {
+    option1Label.innerText = "5 LP";
+    option2Label.innerText = "6 LP";
+    option3Label.innerText = "7 LP";
+  }
+}
