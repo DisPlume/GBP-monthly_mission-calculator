@@ -212,20 +212,20 @@ document.addEventListener('alpine:init', () => {
                 return parseInt(this.days_to_be_missed || 0);
             },
             remainingTiers() {
-                return 80 - this.currentCompletedTier();
+                return 67 - this.currentCompletedTier();
             },
             remainingPrestigeTiers() {
                 if (this.currentCompletedTier() === 199 && this.currentTierXp() >= 10000) return 0;
                 return 200 - this.currentCompletedTier();
             },
             remainingXp() {
-                return (80 * 10000) - this.currentXp();
+                return (2500) - this.currentXp();
             },
             remainingPrestigeXp() {
                 return (200 * 10000) - this.currentXp();
             },
             remainingPercent() {
-                return (this.remainingTiers() / 80) * 100;
+                return (100-(Math.min(this.currentXp() / 2500, 1) * 100));
             },
             remainingPrestigePercent() {
                 return (this.remainingPrestigeTiers() / 200) * 100;
